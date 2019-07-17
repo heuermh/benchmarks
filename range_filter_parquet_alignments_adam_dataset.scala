@@ -25,7 +25,7 @@ if (!inputPath.isDefined) {
   System.exit(1)
 }
 
-val ranges = Seq(ReferenceRegion.fromGenomicRange("1", 100, 200), ReferenceRegion.fromGenomicRange("2", 100, 200))
+val ranges = Seq(ReferenceRegion.fromGenomicRange("chr1", 100, 200), ReferenceRegion.fromGenomicRange("chr2", 100, 200))
 
 val alignments = sc.loadParquetAlignments(inputPath.get)
 println(alignments.filterByOverlappingRegions(ranges).dataset.count())

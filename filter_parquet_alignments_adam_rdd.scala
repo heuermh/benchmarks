@@ -32,4 +32,3 @@ val alignments = sc.loadParquetAlignments(inputPath.get, optPredicate, optProjec
 println(alignments.rdd.count())
 
 System.exit(0)
-

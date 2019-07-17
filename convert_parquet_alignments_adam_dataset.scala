@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.slf4j.LoggerFactory
 
 val logger = LoggerFactory.getLogger("convert_parquet_alignments_adam_dataset")
@@ -27,13 +26,6 @@ if (!inputPath.isDefined || !outputPath.isDefined) {
 }
 
 val alignments = sc.loadParquetAlignments(inputPath.get)
-
-val args = new ADAMSaveAnyArgs()
-args.outputPath = outputPath.get
-args.asSingleFile = true
-args.deferMerging = false
-args.disableFastConcat = false
-
-alignments.transformDataset(ds => ds).save(args)
+alignments.transformDataset(ds => ds).saveAsSam(outputPath.get, asSingleFile = true)
 
 System.exit(0)

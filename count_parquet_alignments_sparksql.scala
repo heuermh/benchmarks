@@ -27,4 +27,3 @@ val df = spark.read.parquet(inputPath.get)
 println(df.count())
 
 System.exit(0)
-

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.ADAMSaveAnyArgs
 import org.disq_bio.disq.HtsjdkReadsRdd
 import org.disq_bio.disq.HtsjdkReadsRddStorage
 import org.disq_bio.disq.FileCardinalityWriteOption
@@ -33,7 +32,7 @@ val alignments = sc.loadParquetAlignments(inputPath.get)
 val (reads, header) = alignments.convertToSam()
 
 val htsjdkReadsRddStorage = HtsjdkReadsRddStorage.makeDefault(sc)
-val htsjdkReadsRdd = new HtsjdkReadsRdd(header, reads.toJavaRDD)
+val htsjdkReadsRdd = new HtsjdkReadsRdd(header, reads.map(_.get()).toJavaRDD)
 htsjdkReadsRddStorage.write(htsjdkReadsRdd, outputPath.get, FileCardinalityWriteOption.SINGLE)
 
 System.exit(0)

@@ -28,4 +28,3 @@ val alignments = sc.loadParquetAlignments(inputPath.get)
 println(alignments.rdd.count())
 
 System.exit(0)
-
