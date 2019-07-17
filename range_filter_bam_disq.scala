@@ -19,6 +19,7 @@ import org.disq_bio.disq.HtsjdkReadsRdd
 import org.disq_bio.disq.HtsjdkReadsRddStorage
 import org.disq_bio.disq.HtsjdkReadsTraversalParameters
 import org.slf4j.LoggerFactory
+import scala.collection.JavaConverters._
 
 val logger = LoggerFactory.getLogger("range_filter_bam_disq")
 val inputPath = Option(System.getenv("INPUT"))
@@ -28,8 +29,8 @@ if (!inputPath.isDefined) {
   System.exit(1)
 }
 
-val ranges = Seq(new Interval("1", 100, 200), new Interval("2", 100, 200))
-val filter = new HtsjdkReadsTraversalParameters(ranges, true)
+val ranges = Seq(new Interval("chr1", 100, 200), new Interval("chr2", 100, 200))
+val filter = new HtsjdkReadsTraversalParameters(ranges.asJava, false)
 
 val htsjdkReadsRddStorage = HtsjdkReadsRddStorage.makeDefault(sc)
 val htsjdkReadsRdd = htsjdkReadsRddStorage.read(inputPath.get, filter)

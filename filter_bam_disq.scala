@@ -34,6 +34,6 @@ def filter(r: SAMRecord): Boolean = {
   true
 }
 
-println(reads.rdd.filter(filter).count())
+println(reads.rdd.filter(filter(_)).count())
 
 System.exit(0)

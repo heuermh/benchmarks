@@ -31,7 +31,7 @@ def filter(r: AlignmentRecord): Boolean = {
   true
 }
 
-println(alignments.rdd.filter(filter).count())
+println(alignments.rdd.filter(filter(_)).count())
 
 System.exit(0)
 

@@ -31,7 +31,7 @@ def filter(r: AlignmentRecord): Boolean = {
   true
 }
 
-println(alignments.dataset.filter(filter).count())
+println(alignments.dataset.filter(filter(_)).count())
 
 System.exit(0)
 
