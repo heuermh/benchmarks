@@ -54,8 +54,8 @@ export INPUT="$SAMPLE.alignments.1m.adam"
 
 time ($ADAM -i range_filter_parquet_alignments_adam_partitioned_dataset.scala &> /dev/null)
 time ($ADAM -i range_filter_parquet_alignments_adam_partitioned_rdd.scala &> /dev/null)
-time ($ADAM -i range_filter_parquet_alignments_adam_partitioned_dataset.scala)
-time ($ADAM -i range_filter_parquet_alignments_adam_partitioned_rdd.scala)
+time ($ADAM -i range_filter_parquet_alignments_adam_partitioned_dataset.scala &> /dev/null)
+time ($ADAM -i range_filter_parquet_alignments_adam_partitioned_rdd.scala &> /dev/null)
 
 export INPUT="$SAMPLE.alignments.adam"
 export OUTPUT="$SAMPLE.out.alignments.adam"
