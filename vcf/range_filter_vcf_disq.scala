@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import htsjdk.samtools.SAMRecord
-import htsjdk.samtools.util.Interval;
-import org.disq_bio.disq.HtsjdkReadsRdd
-import org.disq_bio.disq.HtsjdkReadsRddStorage
-import org.disq_bio.disq.HtsjdkReadsTraversalParameters
+
+import htsjdk.samtools.util.Interval
+import htsjdk.variant.variantcontext.VariantContext
+import org.disq_bio.disq.HtsjdkVariantsRdd
+import org.disq_bio.disq.HtsjdkVariantsRddStorage
+import org.disq_bio.disq.HtsjdkVariantsTraversalParameters
 import org.slf4j.LoggerFactory
 import scala.collection.JavaConverters._
 
-val logger = LoggerFactory.getLogger("range_filter_bam_disq")
+val logger = LoggerFactory.getLogger("range_filter_vcf_disq")
 val inputPath = Option(System.getenv("INPUT"))
 
 if (!inputPath.isDefined) {
@@ -30,11 +31,10 @@ if (!inputPath.isDefined) {
 }
 
 val ranges = Seq(new Interval("chr1", 100, 200), new Interval("chr2", 100, 200))
-val filter = new HtsjdkReadsTraversalParameters(ranges.asJava, false)
 
-val htsjdkReadsRddStorage = HtsjdkReadsRddStorage.makeDefault(sc)
-val htsjdkReadsRdd = htsjdkReadsRddStorage.read(inputPath.get, filter)
-val reads = htsjdkReadsRdd.getReads()
-println(reads.count())
+val htsjdkVariantsRddStorage = HtsjdkVariantsRddStorage.makeDefault(sc)
+val htsjdkVariantsRdd = htsjdkVariantsRddStorage.read(inputPath.get, ranges)
+val vcs = htsjdkVariantsRdd.getVariants()
+println(vcs.count())
 
 System.exit(0)

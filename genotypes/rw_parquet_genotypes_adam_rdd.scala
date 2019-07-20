@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.disq_bio.disq.HtsjdkReadsRdd
-import org.disq_bio.disq.HtsjdkReadsRddStorage
-import org.disq_bio.disq.FileCardinalityWriteOption
+import org.bdgenomics.adam.rdd.ADAMContext._
 import org.slf4j.LoggerFactory
 
-val logger = LoggerFactory.getLogger("count_bam_disq")
+val logger = LoggerFactory.getLogger("rw_parquet_genotypes_adam_dataset")
 val inputPath = Option(System.getenv("INPUT"))
 val outputPath = Option(System.getenv("OUTPUT"))
 
@@ -27,8 +25,7 @@ if (!inputPath.isDefined || !outputPath.isDefined) {
   System.exit(1)
 }
 
-val htsjdkReadsRddStorage = HtsjdkReadsRddStorage.makeDefault(sc)
-val htsjdkReadsRdd = htsjdkReadsRddStorage.read(inputPath.get)
-htsjdkReadsRddStorage.write(htsjdkReadsRdd, outputPath.get, FileCardinalityWriteOption.SINGLE)
+val genotypes = sc.loadParquetGenotypes(inputPath.get)
+genotypes.transform(rdd => rdd).saveAsParquet(outputPath.get)
 
 System.exit(0)
