@@ -18,7 +18,6 @@ import htsjdk.samtools.util.Interval
 import htsjdk.variant.variantcontext.VariantContext
 import org.disq_bio.disq.HtsjdkVariantsRdd
 import org.disq_bio.disq.HtsjdkVariantsRddStorage
-import org.disq_bio.disq.HtsjdkVariantsTraversalParameters
 import org.slf4j.LoggerFactory
 import scala.collection.JavaConverters._
 
@@ -33,7 +32,7 @@ if (!inputPath.isDefined) {
 val ranges = Seq(new Interval("chr1", 100, 200), new Interval("chr2", 100, 200))
 
 val htsjdkVariantsRddStorage = HtsjdkVariantsRddStorage.makeDefault(sc)
-val htsjdkVariantsRdd = htsjdkVariantsRddStorage.read(inputPath.get, ranges)
+val htsjdkVariantsRdd = htsjdkVariantsRddStorage.read(inputPath.get, ranges.asJava)
 val vcs = htsjdkVariantsRdd.getVariants()
 println(vcs.count())
 

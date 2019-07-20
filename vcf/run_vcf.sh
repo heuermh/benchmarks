@@ -20,7 +20,7 @@ set -x
 
 ADAM="adam-shell"
 
-SAMPLE="NA12878.alignedHg38.duplicateMarked.baseRealigned"
+SAMPLE="HiSeq.10000"
 export INPUT="$SAMPLE.vcf.bgz"
 export OUTPUT="$SAMPLE.out.genotypes.adam"
 

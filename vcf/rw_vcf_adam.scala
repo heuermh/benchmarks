@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import htsjdk.samtools.ValidationStringency
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.slf4j.LoggerFactory
 
@@ -26,6 +27,11 @@ if (!inputPath.isDefined || !outputPath.isDefined) {
 }
 
 val vcs = sc.loadVcf(inputPath.get)
-vcs.saveAsVcf(outputPath.get, asSingleFile = true)
+vcs.saveAsVcf(
+  outputPath.get,
+  asSingleFile = true,
+  deferMerging = false,
+  disableFastConcat = false,
+  stringency = ValidationStringency.LENIENT)
 
 System.exit(0)
