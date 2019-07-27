@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 import htsjdk.samtools.ValidationStringency
-import htsjdk.variant.vcf.VCFHeader
-import org.bdgenomics.adam.converters.VariantContextConverter
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.disq_bio.disq.HtsjdkVariantsRdd
 import org.disq_bio.disq.HtsjdkVariantsRddStorage
@@ -33,16 +31,10 @@ if (!inputPath.isDefined || !outputPath.isDefined) {
 }
 
 val variants = sc.loadParquetVariants(inputPath.get)
-
-val sampleIds: java.util.Set[String] = Set.empty.asJava
-val header = new VCFHeader(variants.headerLines.toSet.asJava, sampleIds)
-header.setSequenceDictionary(variants.sequences.toSAMSequenceDictionary)
-
-val converter = VariantContextConverter(variants.headerLines, ValidationStringency.LENIENT, sc.hadoopConfiguration)
-val htsjdkVcs = variants.toVariantContexts().rdd.map(vc => converter.convert(vc).getOrElse(null))
+val (vcs, header) = variants.toVariantContexts().convertToVcf(ValidationStringency.LENIENT)
 
 val htsjdkVariantsRddStorage = HtsjdkVariantsRddStorage.makeDefault(sc)
-val htsjdkVariantsRdd = new HtsjdkVariantsRdd(header, htsjdkVcs.toJavaRDD)
+val htsjdkVariantsRdd = new HtsjdkVariantsRdd(header, vcs.toJavaRDD)
 htsjdkVariantsRddStorage.write(htsjdkVariantsRdd, outputPath.get, FileCardinalityWriteOption.SINGLE)
 
 System.exit(0)
