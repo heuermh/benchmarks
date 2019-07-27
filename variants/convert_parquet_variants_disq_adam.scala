@@ -23,7 +23,7 @@ import org.disq_bio.disq.FileCardinalityWriteOption
 import org.slf4j.LoggerFactory
 import scala.collection.JavaConverters._
 
-val logger = LoggerFactory.getLogger("convert_parquet_genotypes_adam_rdd")
+val logger = LoggerFactory.getLogger("convert_parquet_variants_adam_rdd")
 val inputPath = Option(System.getenv("INPUT"))
 val outputPath = Option(System.getenv("OUTPUT"))
 
@@ -32,13 +32,14 @@ if (!inputPath.isDefined || !outputPath.isDefined) {
   System.exit(1)
 }
 
-val genotypes = sc.loadParquetGenotypes(inputPath.get)
+val variants = sc.loadParquetVariants(inputPath.get)
 
-val header = new VCFHeader(genotypes.headerLines.toSet.asJava, genotypes.samples.map(_.getId()).asJava)
-header.setSequenceDictionary(genotypes.sequences.toSAMSequenceDictionary)
+val sampleIds: java.util.Set[String] = Set.empty.asJava
+val header = new VCFHeader(variants.headerLines.toSet.asJava, sampleIds)
+header.setSequenceDictionary(variants.sequences.toSAMSequenceDictionary)
 
-val converter = VariantContextConverter(genotypes.headerLines, ValidationStringency.LENIENT, sc.hadoopConfiguration)
-val htsjdkVcs = genotypes.toVariantContexts().rdd.map(vc => converter.convert(vc).getOrElse(null))
+val converter = VariantContextConverter(variants.headerLines, ValidationStringency.LENIENT, sc.hadoopConfiguration)
+val htsjdkVcs = variants.toVariantContexts().rdd.map(vc => converter.convert(vc).getOrElse(null))
 
 val htsjdkVariantsRddStorage = HtsjdkVariantsRddStorage.makeDefault(sc)
 val htsjdkVariantsRdd = new HtsjdkVariantsRdd(header, htsjdkVcs.toJavaRDD)

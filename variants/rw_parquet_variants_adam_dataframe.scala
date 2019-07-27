@@ -13,29 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.bdgenomics.adam.models.ReferenceRegion
+import org.bdgenomics.adam.rdd.ADAMContext._
 import org.slf4j.LoggerFactory
 
-val logger = LoggerFactory.getLogger("range_filter_parquet_alignments_sparksql")
+val logger = LoggerFactory.getLogger("rw_parquet_variants_adam_dataframe")
 val inputPath = Option(System.getenv("INPUT"))
+val outputPath = Option(System.getenv("OUTPUT"))
 
-if (!inputPath.isDefined) {
-  logger.error("INPUT environment variable is required")
+if (!inputPath.isDefined || !outputPath.isDefined) {
+  logger.error("INPUT and OUTPUT environment variables are required")
   System.exit(1)
 }
 
-val ranges = Seq(ReferenceRegion.fromGenomicRange("chr1", 100, 200), ReferenceRegion.fromGenomicRange("chr2", 100, 200))
-
-val query = new StringBuilder("select count(*) from alignments a where ")
-query.append(
-  ranges
-    .map(r => "(a.referenceName = '%s' and a.end > %d and a.start < %d)".format(r.referenceName, r.start, r.end))
-    .reduce((a, b) => a + " or " + b)
-)
-
-// use spark sql directly
 val df = spark.read.parquet(inputPath.get)
-df.createOrReplaceTempView("alignments")
-println(spark.sql(query.toString).first.getLong(0))
+val variants = sc.loadVariants(df, inputPath.get)
+
+variants.toDF.write.parquet(outputPath.get)
+variants.saveMetadata(outputPath.get)
 
 System.exit(0)

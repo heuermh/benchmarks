@@ -29,7 +29,7 @@ val ranges = Seq(ReferenceRegion.fromGenomicRange("chr1", 100, 200), ReferenceRe
 val query = new StringBuilder("select count(*) from genotypes g where ")
 query.append(
   ranges
-    .map(r => "(g.referenceName = %s and g.end > %d and g.start < %d)".format(r.referenceName, r.start, r.end))
+    .map(r => "(g.referenceName = '%s' and g.end > %d and g.start < %d)".format(r.referenceName, r.start, r.end))
     .reduce((a, b) => a + " or " + b)
 )
 

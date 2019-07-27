@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.bdgenomics.adam.models.ReferenceRegion
+import org.bdgenomics.adam.rdd.ADAMContext._
+import org.bdgenomics.formats.avro.Variant
 import org.slf4j.LoggerFactory
 
-val logger = LoggerFactory.getLogger("range_filter_parquet_alignments_sparksql")
+val logger = LoggerFactory.getLogger("filter_parquet_variants_adam_rdd")
 val inputPath = Option(System.getenv("INPUT"))
 
 if (!inputPath.isDefined) {
@@ -24,18 +25,10 @@ if (!inputPath.isDefined) {
   System.exit(1)
 }
 
-val ranges = Seq(ReferenceRegion.fromGenomicRange("chr1", 100, 200), ReferenceRegion.fromGenomicRange("chr2", 100, 200))
+val optPredicate = None
+val optProjection = None
 
-val query = new StringBuilder("select count(*) from alignments a where ")
-query.append(
-  ranges
-    .map(r => "(a.referenceName = '%s' and a.end > %d and a.start < %d)".format(r.referenceName, r.start, r.end))
-    .reduce((a, b) => a + " or " + b)
-)
-
-// use spark sql directly
-val df = spark.read.parquet(inputPath.get)
-df.createOrReplaceTempView("alignments")
-println(spark.sql(query.toString).first.getLong(0))
+val variants = sc.loadParquetVariants(inputPath.get, optPredicate, optProjection)
+println(variants.rdd.count())
 
 System.exit(0)

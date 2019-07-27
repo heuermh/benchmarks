@@ -18,11 +18,12 @@
 
 set -x
 
-ADAM="adam-shell"
+#ADAM="adam-shell"
+ADAM="../../adam/bin/adam-shell"
 
-SAMPLE="NA12878.alignedHg38.duplicateMarked.baseRealigned"
+SAMPLE="HiSeq.10000"
 export INPUT="$SAMPLE.genotypes.adam"
-export OUTPUT="$SAMPLE.out.genotypes.adam"
+export OUTPUT="$SAMPLE.out.vcf.gz"
 
 time ($ADAM -i convert_parquet_genotypes_adam_dataset.scala &> /dev/null)
 rm -Rf $OUTPUT
@@ -30,8 +31,8 @@ rm -Rf $OUTPUT
 time ($ADAM -i convert_parquet_genotypes_adam_rdd.scala &> /dev/null)
 rm -Rf $OUTPUT
 
-time ($ADAM -i convert_parquet_genotypes_disq_adam.scala &> /dev/null)
-rm -Rf $OUTPUT
+#time ($ADAM -i convert_parquet_genotypes_disq_adam.scala &> /dev/null)
+#rm -Rf $OUTPUT
 
 #time ($ADAM -i convert_parquet_genotypes_disq_convert.scala &> /dev/null)
 #rm -Rf $SAMPLE.genotypes.adam

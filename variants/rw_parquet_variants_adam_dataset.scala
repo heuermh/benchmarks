@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import htsjdk.samtools.ValidationStringency
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.slf4j.LoggerFactory
 
-val logger = LoggerFactory.getLogger("convert_parquet_genotypes_adam_rdd")
+val logger = LoggerFactory.getLogger("rw_parquet_variants_adam_dataset")
 val inputPath = Option(System.getenv("INPUT"))
 val outputPath = Option(System.getenv("OUTPUT"))
 
@@ -26,14 +25,7 @@ if (!inputPath.isDefined || !outputPath.isDefined) {
   System.exit(1)
 }
 
-val genotypes = sc.loadParquetGenotypes(inputPath.get).transform(rdd => rdd)
-genotypes
-  .toVariantContexts()
-  .saveAsVcf(
-    outputPath.get,
-    asSingleFile = true,
-    deferMerging = false,
-    disableFastConcat = false,
-    stringency = ValidationStringency.LENIENT)
+val variants = sc.loadParquetVariants(inputPath.get)
+variants.transformDataset(ds => ds).saveAsParquet(outputPath.get)
 
 System.exit(0)

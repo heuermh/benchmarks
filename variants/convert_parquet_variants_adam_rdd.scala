@@ -17,7 +17,7 @@ import htsjdk.samtools.ValidationStringency
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.slf4j.LoggerFactory
 
-val logger = LoggerFactory.getLogger("convert_parquet_genotypes_adam_rdd")
+val logger = LoggerFactory.getLogger("convert_parquet_variants_adam_rdd")
 val inputPath = Option(System.getenv("INPUT"))
 val outputPath = Option(System.getenv("OUTPUT"))
 
@@ -26,8 +26,8 @@ if (!inputPath.isDefined || !outputPath.isDefined) {
   System.exit(1)
 }
 
-val genotypes = sc.loadParquetGenotypes(inputPath.get).transform(rdd => rdd)
-genotypes
+val variants = sc.loadParquetVariants(inputPath.get).transform(rdd => rdd)
+variants
   .toVariantContexts()
   .saveAsVcf(
     outputPath.get,

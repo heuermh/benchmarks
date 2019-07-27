@@ -16,7 +16,7 @@
 import org.bdgenomics.adam.models.ReferenceRegion
 import org.slf4j.LoggerFactory
 
-val logger = LoggerFactory.getLogger("range_filter_parquet_alignments_sparksql")
+val logger = LoggerFactory.getLogger("range_filter_parquet_variants_sparksql")
 val inputPath = Option(System.getenv("INPUT"))
 
 if (!inputPath.isDefined) {
@@ -26,16 +26,16 @@ if (!inputPath.isDefined) {
 
 val ranges = Seq(ReferenceRegion.fromGenomicRange("chr1", 100, 200), ReferenceRegion.fromGenomicRange("chr2", 100, 200))
 
-val query = new StringBuilder("select count(*) from alignments a where ")
+val query = new StringBuilder("select count(*) from variants v where ")
 query.append(
   ranges
-    .map(r => "(a.referenceName = '%s' and a.end > %d and a.start < %d)".format(r.referenceName, r.start, r.end))
+    .map(r => "(v.referenceName = '%s' and v.end > %d and v.start < %d)".format(r.referenceName, r.start, r.end))
     .reduce((a, b) => a + " or " + b)
 )
 
 // use spark sql directly
 val df = spark.read.parquet(inputPath.get)
-df.createOrReplaceTempView("alignments")
+df.createOrReplaceTempView("variants")
 println(spark.sql(query.toString).first.getLong(0))
 
 System.exit(0)
