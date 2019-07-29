@@ -31,7 +31,7 @@ if (!inputPath.isDefined || !outputPath.isDefined) {
 }
 
 val genotypes = sc.loadParquetGenotypes(inputPath.get)
-val (vcs, header) = genotypes.toVariantContexts().convertToVcf(ValidationStringency.LENIENT)
+val (header, vcs) = genotypes.toVariantContexts().convertToVcf(ValidationStringency.LENIENT)
 
 val htsjdkVariantsRddStorage = HtsjdkVariantsRddStorage.makeDefault(sc)
 val htsjdkVariantsRdd = new HtsjdkVariantsRdd(header, vcs.toJavaRDD)

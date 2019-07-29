@@ -29,7 +29,7 @@ if (!inputPath.isDefined || !outputPath.isDefined) {
 }
 
 val alignments = sc.loadParquetAlignments(inputPath.get)
-val (reads, header) = alignments.convertToSam()
+val (header, reads) = alignments.convertToSam()
 
 val htsjdkReadsRddStorage = HtsjdkReadsRddStorage.makeDefault(sc)
 val htsjdkReadsRdd = new HtsjdkReadsRdd(header, reads.map(_.get()).toJavaRDD)

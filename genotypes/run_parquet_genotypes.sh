@@ -31,8 +31,8 @@ rm -Rf $OUTPUT
 time ($ADAM -i convert_parquet_genotypes_adam_rdd.scala &> /dev/null)
 rm -Rf $OUTPUT
 
-#time ($ADAM -i convert_parquet_genotypes_disq_adam.scala &> /dev/null)
-#rm -Rf $OUTPUT
+time ($ADAM -i convert_parquet_genotypes_disq_adam.scala &> /dev/null)
+rm -Rf $OUTPUT
 
 #time ($ADAM -i convert_parquet_genotypes_disq_convert.scala &> /dev/null)
 #rm -Rf $SAMPLE.genotypes.adam
