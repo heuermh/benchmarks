@@ -25,6 +25,20 @@ s3://1000genomes/1000G_2504_high_coverage/data/ERR3239334/NA12878.final.cram.cra
 4. Read the header and all records from a BAM file and write them out to a new BAM file.
 5. Convert the header and all records from a BAM file per [bdg-formats schema](https://github.com/bigdatagenomics/bdg-formats) and write to Apache Parquet format.
 
+#### CRAM file benchmarks
+
+Test files:
+```
+s3://1000genomes/1000G_2504_high_coverage/data/ERR3239334/NA12878.final.cram
+s3://1000genomes/1000G_2504_high_coverage/data/ERR3239334/NA12878.final.cram.crai
+```
+
+1. Count the number of records in a CRAM file.
+2. Count the number of records in a CRAM file matching a filter, i.e.
+3. Count the number of records in an indexed CRAM file matching a range filter, i.e.
+4. Read the header and all records from a CRAM file and write them out to a new CRAM file.
+5. Convert the header and all records from a CRAM file per [bdg-formats schema](https://github.com/bigdatagenomics/bdg-formats) and write to Apache Parquet format.
+
 #### Alignments in Apache Parquet format benchmarks
 
 Test files:
@@ -40,6 +54,7 @@ $ adam-submit transformAlignments -partition_by_start_pos sample.bam sample.alig
 3. Count the number of alignment records from a directory in Apache Parquet partitioned by genomic start position matching a range filter, i.e.
 4. Read all the alignment records and metadata from a directory in Apache Parquet format and write them out to a new directory in Apache Parquet format.
 5. Convert the alignment records and metadata from a directory in Apache Parquet format and write to a single file in BAM format.
+6. Convert the alignment records and metadata from a directory in Apache Parquet format and write to a single file in CRAM format.
 
 #### Block-gzipped (BGZF) VCF file benchmarks
 

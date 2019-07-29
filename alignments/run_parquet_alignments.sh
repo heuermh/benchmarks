@@ -37,6 +37,20 @@ rm -Rf $OUTPUT
 #time ($ADAM -i convert_parquet_alignments_disq_convert.scala &> /dev/null)
 #rm -Rf $SAMPLE.alignments.adam
 
+export OUTPUT="$SAMPLE.out.cram"
+
+time ($ADAM -i convert_parquet_alignments_adam_dataset.scala &> /dev/null)
+rm -Rf $OUTPUT
+
+time ($ADAM -i convert_parquet_alignments_adam_rdd.scala &> /dev/null)
+rm -Rf $OUTPUT
+
+time ($ADAM -i convert_parquet_alignments_disq_adam.scala &> /dev/null)
+rm -Rf $OUTPUT
+
+#time ($ADAM -i convert_parquet_alignments_disq_convert.scala &> /dev/null)
+#rm -Rf $SAMPLE.alignments.adam
+
 time ($ADAM -i count_parquet_alignments_adam_dataframe.scala &> /dev/null)
 time ($ADAM -i count_parquet_alignments_adam_dataset.scala &> /dev/null)
 time ($ADAM -i count_parquet_alignments_adam_rdd.scala &> /dev/null)
