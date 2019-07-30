@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import htsjdk.samtools.{ SAMFileHeader, SAMRecord }
-import org.bdgenomics.adam.converters.SAMRecordConverter
+import htsjdk.samtools.ValidationStringency
+import org.bdgenomics.adam.converters.VariantContextConverter
 import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.read.AlignmentRecordDataset
-import org.bdgenomics.formats.avro.AlignmentRecord
-import org.disq_bio.disq.HtsjdkReadsRdd
-import org.disq_bio.disq.HtsjdkReadsRddStorage
+import org.bdgenomics.adam.rdd.variant.VariantContextDataset
+import org.disq_bio.disq.HtsjdkVariantsRdd
+import org.disq_bio.disq.HtsjdkVariantsRddStorage
 import org.slf4j.LoggerFactory
 
-val logger = LoggerFactory.getLogger("disqConvert")
+val logger = LoggerFactory.getLogger("convert_vcf_disq_adam")
 val inputPath = Option(System.getenv("INPUT"))
 val outputPath = Option(System.getenv("OUTPUT"))
 
@@ -31,19 +30,24 @@ if (!inputPath.isDefined || !outputPath.isDefined) {
   System.exit(1)
 }
 
-val htsjdkReadsRddStorage = HtsjdkReadsRddStorage.makeDefault(sc)
-val htsjdkReadsRdd = htsjdkReadsRddStorage.read(inputPath.get)
+val htsjdkVariantsRddStorage = HtsjdkVariantsRddStorage.makeDefault(sc)
+val htsjdkVariantsRdd = htsjdkVariantsRddStorage.read(inputPath.get)
 
-val header = htsjdkReadsRdd.getHeader()
-val references = sc.loadBamReferences(header)
-val readGroups = sc.loadBamReadGroups(header)
-val processingSteps = sc.loadBamProcessingSteps(header)
+val header = htsjdkVariantsRdd.getHeader()
+val headerLines = VariantContextConverter.headerLines(header)
+val samples = VariantContextConverter.samples(header)
+val sequences = VariantContextConverter.sequences(header)
+val converter = VariantContextConverter(headerLines, ValidationStringency.LENIENT, sc.hadoopConfiguration)
 
-val reads = htsjdkReadsRdd.getReads()
-val converter = new SAMRecordConverter()
-val alignmentRdd = reads.rdd.map(converter.convert(_))
+val variants = htsjdkVariantsRdd.getVariants()
+val variantContextRdd = variants.rdd.flatMap(converter.convert(_))
 
-val alignments = AlignmentRecordDataset(alignmentRdd, references, readGroups, processingSteps)
-alignments.saveAsParquet(outputPath.get)
+val genotypes = VariantContextDataset(
+  variantContextRdd,
+  sequences,
+  samples,
+  VariantContextConverter.cleanAndMixInSupportedLines(headerLines, ValidationStringency.LENIENT, logger)).toGenotypes()
+
+genotypes.saveAsParquet(outputPath.get)
 
 System.exit(0)
