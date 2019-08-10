@@ -18,7 +18,8 @@
 
 set -x
 
-ADAM="adam-shell"
+#ADAM="adam-shell"
+ADAM="../../adam/bin/adam-shell"
 
 SAMPLE="NA12878.alignedHg38.duplicateMarked.baseRealigned"
 export INPUT="$SAMPLE.bam"

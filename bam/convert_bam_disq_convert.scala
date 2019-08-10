@@ -13,15 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import htsjdk.samtools.{ SAMFileHeader, SAMRecord }
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.read.AlignmentRecordDataset
 import org.bdgenomics.convert.ConversionStringency
-import org.bdgenomics.convert.htsjdk.SamRecordToAlignmentRecord
+import org.bdgenomics.convert.htsjdk.{
+  SamHeaderToProcessingSteps,
+  SamHeaderToReadGroups,
+  SamHeaderToReferences,
+  SamRecordToAlignmentRecord
+}
 import org.bdgenomics.formats.avro.AlignmentRecord
 import org.disq_bio.disq.HtsjdkReadsRdd
 import org.disq_bio.disq.HtsjdkReadsRddStorage
 import org.slf4j.LoggerFactory
+import scala.collection.JavaConverters._
 
 val logger = LoggerFactory.getLogger("convert_bam_disq_convert")
 val inputPath = Option(System.getenv("INPUT"))
@@ -36,13 +41,12 @@ val htsjdkReadsRddStorage = HtsjdkReadsRddStorage.makeDefault(sc)
 val htsjdkReadsRdd = htsjdkReadsRddStorage.read(inputPath.get)
 
 val header = htsjdkReadsRdd.getHeader()
-val references = sc.loadBamReferences(header)
-val readGroups = sc.loadBamReadGroups(header)
-val processingSteps = sc.loadBamProcessingSteps(header)
+val references = new SamHeaderToReferences().convert(header, ConversionStringency.STRICT, logger).asScala
+val readGroups = new SamHeaderToReadGroups().convert(header, ConversionStringency.STRICT, logger).asScala
+val processingSteps = new SamHeaderToProcessingSteps().convert(header, ConversionStringency.STRICT, logger).asScala
 
 val reads = htsjdkReadsRdd.getReads()
-val converter = new SamRecordToAlignmentRecord()
-val alignmentRdd = reads.rdd.map(converter.convert(_, ConversionStringency.STRICT, logger))
+val alignmentRdd = reads.rdd.map(new SamRecordToAlignmentRecord().convert(_, ConversionStringency.STRICT, logger))
 
 val alignments = AlignmentRecordDataset(alignmentRdd, references, readGroups, processingSteps)
 alignments.saveAsParquet(outputPath.get)
