@@ -14,9 +14,6 @@ s3://giab/technical/platinum_genomes/bams_vcfs_4individules_2013/NA12878_S1_200x
 
 s3://giab/data/NA12878/NIST_NA12878_HG001_HiSeq_300x/NHGRI_Illumina300X_novoalign_bams/HG001.GRCh38_full_plus_hs38d1_analysis_set_minus_alts.300x.bam
 s3://giab/data/NA12878/NIST_NA12878_HG001_HiSeq_300x/NHGRI_Illumina300X_novoalign_bams/HG001.GRCh38_full_plus_hs38d1_analysis_set_minus_alts.300x.bam.bai
-
-s3://1000genomes/1000G_2504_high_coverage/data/ERR3239334/NA12878.final.cram
-s3://1000genomes/1000G_2504_high_coverage/data/ERR3239334/NA12878.final.cram.crai
 ```
 
 1. Count the number of records in a BAM file.

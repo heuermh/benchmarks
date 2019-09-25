@@ -13,17 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import htsjdk.samtools.{ SAMFileHeader, SAMRecord }
 import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.read.AlignmentRecordDataset
+import org.bdgenomics.adam.rdd.variant.GenotypeDataset
 import org.bdgenomics.convert.ConversionStringency
-import org.bdgenomics.convert.htsjdk.SamRecordToAlignmentRecord
-import org.bdgenomics.formats.avro.AlignmentRecord
-import org.disq_bio.disq.HtsjdkReadsRdd
-import org.disq_bio.disq.HtsjdkReadsRddStorage
+import org.bdgenomics.convert.htsjdk.{
+  VcfHeaderToHeaderLines,
+  VcfHeaderToSamples,
+  VcfHeaderToSequences,
+  VariantContextToGenotype
+}
+import org.disq_bio.disq.HtsjdkVariantsRdd
+import org.disq_bio.disq.HtsjdkVariantsRddStorage
 import org.slf4j.LoggerFactory
+import scala.collection.JavaConverters._
 
-val logger = LoggerFactory.getLogger("convert_bam_disq_convert")
+val logger = LoggerFactory.getLogger("convert_vcf_disq_convert")
 val inputPath = Option(System.getenv("INPUT"))
 val outputPath = Option(System.getenv("OUTPUT"))
 
@@ -32,19 +36,19 @@ if (!inputPath.isDefined || !outputPath.isDefined) {
   System.exit(1)
 }
 
-val htsjdkReadsRddStorage = HtsjdkReadsRddStorage.makeDefault(sc)
-val htsjdkReadsRdd = htsjdkReadsRddStorage.read(inputPath.get)
+val htsjdkVariantsRddStorage = HtsjdkVariantsRddStorage.makeDefault(sc)
+val htsjdkVariantsRdd = htsjdkVariantsRddStorage.read(inputPath.get)
 
-val header = htsjdkReadsRdd.getHeader()
-val references = sc.loadBamReferences(header)
-val readGroups = sc.loadBamReadGroups(header)
-val processingSteps = sc.loadBamProcessingSteps(header)
+val header = htsjdkVariantsRdd.getHeader()
+val headerLines = new VcfHeaderToHeaderLines().convert(header, ConversionStringency.STRICT, logger).asScala
+val sequences = new VcfHeaderToSequences().convert(header, ConversionStringency.STRICT, logger).asScala
+val samples = new VcfHeaderToSamples().convert(header, ConversionStringency.STRICT, logger).asScala
 
-val reads = htsjdkReadsRdd.getReads()
-val converter = new SamRecordToAlignmentRecord()
-val alignmentRdd = reads.rdd.map(converter.convert(_, ConversionStringency.STRICT, logger))
+val variants = htsjdkVariantsRdd.getVariants()
+val converter = new VariantContextToGenotypes(header)
+val genotypeRdd = variants.rdd.flatMap(converter.convert(_, ConversionStringency.STRICT, logger))
 
-val alignments = AlignmentRecordDataset(alignmentRdd, references, readGroups, processingSteps)
-alignments.saveAsParquet(outputPath.get)
+val genotypes = GenotypeDataset(genotypeRdd, sequences, samples, headerLines)
+genotypes.saveAsParquet(outputPath.get)
 
 System.exit(0)
