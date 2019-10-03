@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.formats.avro.AlignmentRecord
+import org.bdgenomics.formats.avro.Alignment
 import org.slf4j.LoggerFactory
 
 val logger = LoggerFactory.getLogger("filter_parquet_alignments_adam_rdd")

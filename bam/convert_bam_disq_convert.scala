@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.read.AlignmentRecordDataset
+import org.bdgenomics.adam.rdd.read.AlignmentDataset
 import org.bdgenomics.convert.ConversionStringency
 import org.bdgenomics.convert.htsjdk.{
   SamHeaderToProcessingSteps,
   SamHeaderToReadGroups,
   SamHeaderToReferences,
-  SamRecordToAlignmentRecord
+  SamRecordToAlignment
 }
-import org.bdgenomics.formats.avro.AlignmentRecord
+import org.bdgenomics.formats.avro.Alignment
 import org.disq_bio.disq.HtsjdkReadsRdd
 import org.disq_bio.disq.HtsjdkReadsRddStorage
 import org.slf4j.LoggerFactory
@@ -46,9 +46,9 @@ val readGroups = new SamHeaderToReadGroups().convert(header, ConversionStringenc
 val processingSteps = new SamHeaderToProcessingSteps().convert(header, ConversionStringency.STRICT, logger).asScala
 
 val reads = htsjdkReadsRdd.getReads()
-val alignmentRdd = reads.rdd.map(new SamRecordToAlignmentRecord().convert(_, ConversionStringency.STRICT, logger))
+val alignmentRdd = reads.rdd.map(new SamRecordToAlignment().convert(_, ConversionStringency.STRICT, logger))
 
-val alignments = AlignmentRecordDataset(alignmentRdd, references, readGroups, processingSteps)
+val alignments = AlignmentDataset(alignmentRdd, references, readGroups, processingSteps)
 alignments.saveAsParquet(outputPath.get)
 
 System.exit(0)

@@ -16,8 +16,8 @@
 import htsjdk.samtools.{ SAMFileHeader, SAMRecord }
 import org.bdgenomics.adam.converters.SAMRecordConverter
 import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.rdd.read.AlignmentRecordDataset
-import org.bdgenomics.formats.avro.AlignmentRecord
+import org.bdgenomics.adam.rdd.read.AlignmentDataset
+import org.bdgenomics.formats.avro.Alignment
 import org.disq_bio.disq.HtsjdkReadsRdd
 import org.disq_bio.disq.HtsjdkReadsRddStorage
 import org.slf4j.LoggerFactory
@@ -44,7 +44,7 @@ val reads = htsjdkReadsRdd.getReads()
 val converter = new SAMRecordConverter()
 val alignmentRdd = reads.rdd.map(converter.convert(_))
 
-val alignments = AlignmentRecordDataset(alignmentRdd, references, readGroups, processingSteps)
+val alignments = AlignmentDataset(alignmentRdd, references, readGroups, processingSteps)
 alignments.saveAsParquet(outputPath.get)
 
 System.exit(0)

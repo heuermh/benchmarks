@@ -32,4 +32,3 @@ val alignments = sc.loadIndexedBam(inputPath.get, ranges)
 println(alignments.dataset.count())
 
 System.exit(0)
-

@@ -31,4 +31,3 @@ val alignments = sc.loadBam(inputPath.get)
 println(alignments.dataset.count())
 
 System.exit(0)
-

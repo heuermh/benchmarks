@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.adam.sql.AlignmentRecord
+import org.bdgenomics.adam.sql.Alignment
 import org.slf4j.LoggerFactory
 
 val logger = LoggerFactory.getLogger("filter_cram_adam_dataset")
@@ -30,11 +30,10 @@ System.getProperties().put("samjdk.reference_fasta", refPath.get)
 
 val alignments = sc.loadBam(inputPath.get)
 
-def filter(r: AlignmentRecord): Boolean = {
+def filter(a: Alignment): Boolean = {
   true
 }
 
 println(alignments.dataset.filter(filter(_)).count())
 
 System.exit(0)
-

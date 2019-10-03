@@ -18,7 +18,8 @@
 
 set -x
 
-ADAM="adam-shell"
+#ADAM="adam-shell"
+ADAM="../../adam/bin/adam-shell"
 #ADAM="adam-shell --conf spark.kryo.registrationRequired=true"
 
 SAMPLE="NA12878.alignedHg38.duplicateMarked.baseRealigned"
@@ -39,14 +40,16 @@ rm -Rf $OUTPUT
 
 export OUTPUT="$SAMPLE.out.cram"
 
-time ($ADAM -i convert_parquet_alignments_adam_dataset.scala &> /dev/null)
-rm -Rf $OUTPUT
+# https://github.com/bigdatagenomics/adam/issues/2214
 
-time ($ADAM -i convert_parquet_alignments_adam_rdd.scala &> /dev/null)
-rm -Rf $OUTPUT
+#time ($ADAM -i convert_parquet_alignments_adam_dataset.scala &> /dev/null)
+#rm -Rf $OUTPUT
 
-time ($ADAM -i convert_parquet_alignments_disq_adam.scala &> /dev/null)
-rm -Rf $OUTPUT
+#time ($ADAM -i convert_parquet_alignments_adam_rdd.scala &> /dev/null)
+#rm -Rf $OUTPUT
+
+#time ($ADAM -i convert_parquet_alignments_disq_adam.scala &> /dev/null)
+#rm -Rf $OUTPUT
 
 #time ($ADAM -i convert_parquet_alignments_disq_convert.scala &> /dev/null)
 #rm -Rf $SAMPLE.alignments.adam

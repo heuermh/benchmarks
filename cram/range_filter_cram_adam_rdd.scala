@@ -35,4 +35,3 @@ val alignments = sc.loadIndexedBam(inputPath.get, ranges)
 println(alignments.rdd.count())
 
 System.exit(0)
-

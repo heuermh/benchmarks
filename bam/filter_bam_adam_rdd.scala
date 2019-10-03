@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import org.bdgenomics.adam.rdd.ADAMContext._
-import org.bdgenomics.formats.avro.AlignmentRecord
+import org.bdgenomics.formats.avro.Alignment
 import org.slf4j.LoggerFactory
 
 val logger = LoggerFactory.getLogger("filter_bam_adam_rdd")
@@ -27,7 +27,7 @@ if (!inputPath.isDefined) {
 
 val alignments = sc.loadBam(inputPath.get)
 
-def filter(r: AlignmentRecord): Boolean = {
+def filter(a: Alignment): Boolean = {
   true
 }
 
