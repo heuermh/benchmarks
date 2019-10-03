@@ -18,7 +18,8 @@
 
 set -x
 
-ADAM="adam-shell"
+#ADAM="adam-shell"
+ADAM="../../adam/bin/adam-shell"
 
 SAMPLE="HiSeq.10000"
 export INPUT="$SAMPLE.vcf.bgz"
@@ -30,8 +31,8 @@ rm -Rf $OUTPUT
 time ($ADAM -i convert_vcf_adam_rdd.scala &> /dev/null)
 rm -Rf $OUTPUT
 
-#time ($ADAM -i convert_vcf_disq_adam.scala &> /dev/null)
-#rm -Rf $OUTPUT
+time ($ADAM -i convert_vcf_disq_adam.scala &> /dev/null)
+rm -Rf $OUTPUT
 #
 #time ($ADAM -i convert_vcf_disq_convert.scala &> /dev/null)
 #rm -Rf $OUTPUT
